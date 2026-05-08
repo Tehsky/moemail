@@ -3,7 +3,7 @@ import { getRequestContext } from "@cloudflare/next-on-pages"
 import { EMAIL_CONFIG } from "@/config"
 import { checkPermission, auth } from "@/lib/auth"
 import { createDb } from "@/lib/db"
-import { roles, userRoles } from "@/lib/schema"
+import { roles } from "@/lib/schema"
 import { eq } from "drizzle-orm"
 
 export const runtime = "edge"
