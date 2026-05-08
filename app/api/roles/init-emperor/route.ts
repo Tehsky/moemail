@@ -6,6 +6,27 @@ import { eq } from "drizzle-orm";
 
 export const runtime = "edge";
 
+async function ensureEmperorRoleId() {
+  const db = createDb();
+  const emperorRole = await db.query.roles.findFirst({
+    where: eq(roles.name, ROLES.EMPEROR),
+    with: { userRoles: true },
+  });
+
+  if (emperorRole) {
+    return { roleId: emperorRole.id, assignedUsers: emperorRole.userRoles.length };
+  }
+
+  const [newRole] = await db.insert(roles)
+    .values({
+      name: ROLES.EMPEROR,
+      description: "皇帝（网站所有者）",
+    })
+    .returning({ id: roles.id });
+
+  return { roleId: newRole.id, assignedUsers: 0 };
+}
+
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id) {
@@ -14,18 +35,9 @@ export async function GET() {
 
   const db = createDb();
 
-  const emperorRole = await db.query.roles.findFirst({
-    where: eq(roles.name, ROLES.EMPEROR),
-    with: {
-      userRoles: true,
-    },
-  });
-
-  if (emperorRole && emperorRole.userRoles.length > 0) {
-    return Response.json({ error: "已存在皇帝, 谋反将被处死" }, { status: 400 });
-  }
-
   try {
+    const { roleId, assignedUsers } = await ensureEmperorRoleId();
+
     const currentUserRole = await db.query.userRoles.findFirst({
       where: eq(userRoles.userId, session.user.id),
       with: {
@@ -37,15 +49,8 @@ export async function GET() {
       return Response.json({ message: "你已经是皇帝了" });
     }
 
-    let roleId = emperorRole?.id;
-    if (!roleId) {
-      const [newRole] = await db.insert(roles)
-        .values({
-          name: ROLES.EMPEROR,
-          description: "皇帝（网站所有者）",
-        })
-        .returning({ id: roles.id });
-      roleId = newRole.id;
+    if (assignedUsers > 0) {
+      return Response.json({ error: "已存在皇帝, 谋反将被处死" }, { status: 400 });
     }
 
     await assignRoleToUser(db, session.user.id, roleId);
@@ -58,4 +63,8 @@ export async function GET() {
       { status: 500 }
     );
   }
-} 
+}
+
+export async function POST() {
+  return GET();
+}
