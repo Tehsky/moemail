@@ -23,6 +23,14 @@ cache_variants = [
         re.compile(r'async function _e\(\)\{return process\.env\.__NEXT_ON_PAGES__KV_SUSPENSE_CACHE\?z\("kv"\):z\("cache-api"\)\}async function z\(e\)\{let t=await import\(`\./__next-on-pages-dist__/cache/\$\{e\}\.js`\);return new t\.default\}', re.S),
         'async function _e(){return null}async function z(e){return null}',
     ),
+    (
+        re.compile(r'async function _e\(\)\{return process\.env\.__NEXT_ON_PAGES__KV_SUSPENSE_CACHE\?P\("kv"\):P\("cache-api"\)\}async function P\(e\)\{let t=await import\(`\./__next-on-pages-dist__/cache/\$\{e\}\.js`\);return new t\.default\}', re.S),
+        'async function _e(){return null}async function P(e){return null}',
+    ),
+    (
+        re.compile(r'async function _e\(\)\{return process\.env\.__NEXT_ON_PAGES__KV_SUSPENSE_CACHE\?([A-Za-z])\("kv"\):\1\("cache-api"\)\}async function \1\(e\)\{let t=await import\(`\./__next-on-pages-dist__/cache/\$\{e\}\.js`\);return new t\.default\}', re.S),
+        'async function _e(){return null}async function X(e){return null}',
+    ),
 ]
 
 cache_count = 0
