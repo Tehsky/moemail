@@ -54,7 +54,9 @@ async function migrate() {
     
     // Applying migrations
     console.log(`Applying migrations to ${mode} database: ${dbName}`)
-    await execAsync(`wrangler d1 migrations apply ${dbName} --${mode}`)
+
+    // Use pnpm dlx to ensure we run the repository's (or a compatible) wrangler v4 instead of a possibly outdated global wrangler
+    await execAsync(`pnpm dlx wrangler d1 migrations apply ${dbName} --${mode}`)
 
     console.log('Migration completed successfully!')
   } catch (error) {
