@@ -20,6 +20,10 @@ declare global {
 
 declare module "next-auth" {
   interface User {
+    id?: string
+    name?: string | null
+    email?: string | null
+    image?: string | null
     roles?: { name: string }[]
     username?: string | null
     providers?: string[]
@@ -27,6 +31,16 @@ declare module "next-auth" {
 
   interface Session {
     user: User
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id?: string
+    name?: string | null
+    email?: string | null
+    image?: string | null
+    username?: string | null
   }
 }
 

@@ -187,6 +187,7 @@ export const {
         token.id = user.id
         token.name = user.name || user.username
         token.username = user.username
+        token.email = user.email
         token.image = user.image || generateAvatarUrl(token.name as string)
       }
       return token
@@ -196,6 +197,7 @@ export const {
         session.user.id = token.id as string
         session.user.name = token.name as string
         session.user.username = token.username as string
+        session.user.email = (token.email as string | undefined) ?? ""
         session.user.image = token.image as string
 
         const db = createDb()
