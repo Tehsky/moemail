@@ -10,6 +10,8 @@ interface Config {
   emailDomains: string
   emailDomainsArray: string[]
   adminContact: string
+  adminUserId: string | null
+  currentUserIsAdmin: boolean
   maxEmails: number
 }
 
@@ -36,6 +38,8 @@ const useConfigStore = create<ConfigStore>((set) => ({
           emailDomains: data.emailDomains,
           emailDomainsArray: data.emailDomains.split(','),
           adminContact: data.adminContact || "",
+          adminUserId: data.adminUserId ?? null,
+          currentUserIsAdmin: Boolean(data.currentUserIsAdmin),
           maxEmails: Number(data.maxEmails) || EMAIL_CONFIG.MAX_ACTIVE_EMAILS
         },
         loading: false
