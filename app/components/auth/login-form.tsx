@@ -197,11 +197,11 @@ export function LoginForm({ turnstile }: LoginFormProps) {
   }
 
   const handleGithubLogin = () => {
-    signIn("github", { callbackUrl: "/" })
+    signIn("github")
   }
 
   const handleGoogleLogin = () => {
-    signIn("google", { callbackUrl: "/" })
+    signIn("google")
   }
 
   return (
