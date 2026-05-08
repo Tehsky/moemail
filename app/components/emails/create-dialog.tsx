@@ -39,22 +39,14 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
   }
 
   const createEmail = async () => {
-    if (!emailName.trim()) {
-      toast({
-        title: tList("error"),
-        description: t("namePlaceholder"),
-        variant: "destructive"
-      })
-      return
-    }
-
     setLoading(true)
     try {
+      const trimmedEmailName = emailName.trim()
       const response = await fetch("/api/emails/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: emailName,
+          name: trimmedEmailName,
           domain: currentDomain,
           expiryTime: parseInt(expiryTime)
         })
@@ -159,19 +151,17 @@ export function CreateDialog({ onEmailCreated }: CreateDialogProps) {
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span className="shrink-0">{t("domain")}:</span>
-            {emailName ? (
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="truncate">{`${emailName}@${currentDomain}`}</span>
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="truncate">{`${emailName.trim() || "..."}@${currentDomain}`}</span>
+              {emailName.trim() && (
                 <div
                   className="shrink-0 cursor-pointer hover:text-primary transition-colors"
                   onClick={copyEmailAddress}
                 >
                   <Copy className="size-4" />
                 </div>
-              </div>
-            ) : (
-              <span className="text-gray-400">...</span>
-            )}
+              )}
+            </div>
           </div>
         </div>
         <div className="flex justify-end gap-2">
