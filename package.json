@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build:pages": "npx @cloudflare/next-on-pages",
+    "build:pages": "pnpm exec next-on-pages",
     "db:migrate-local": "tsx scripts/migrate.ts local",
     "db:migrate-remote": "tsx scripts/migrate.ts remote",
     "webhook-test-server": "bun run scripts/webhook-test-server.ts",
@@ -16,7 +16,8 @@
     "test:cleanup": "curl http://localhost:8787/__scheduled",
     "deploy:email": "wrangler deploy --config wrangler.email.json",
     "deploy:cleanup": "wrangler deploy --config wrangler.cleanup.json",
-    "deploy:pages": "npm run build:pages && wrangler pages deploy .vercel/output/static --branch main"
+    "deploy:pages": "npm run build:pages && wrangler pages deploy .vercel/output/static --branch main",
+    "postbuild:pages": "python3 scripts/fix-pages-blob-import.py"
   },
   "type": "module",
   "dependencies": {
