@@ -108,9 +108,7 @@ export function ProfileCard({ user }: ProfileCardProps) {
               )}
             </div>
             <p className="text-sm text-muted-foreground truncate mt-1">
-              {
-                user.email ? user.email : `${t("name")}: ${user.username}`
-              }
+              {user.email || user.username || user.name || "未设置"}
             </p>
             {user.roles && (
               <div className="flex gap-2 mt-2">

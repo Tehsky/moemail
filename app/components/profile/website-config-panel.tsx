@@ -25,9 +25,6 @@ export function WebsiteConfigPanel() {
   const [defaultRole, setDefaultRole] = useState<string>("")
   const [emailDomains, setEmailDomains] = useState<string>("")
   const [adminContact, setAdminContact] = useState<string>("")
-  const [adminUsername, setAdminUsername] = useState<string>("")
-  const [adminUserId, setAdminUserId] = useState<string>("")
-  const [currentUserIsAdmin, setCurrentUserIsAdmin] = useState(false)
   const [maxEmails, setMaxEmails] = useState<string>(EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString())
   const [turnstileEnabled, setTurnstileEnabled] = useState(false)
   const [turnstileSiteKey, setTurnstileSiteKey] = useState("")
@@ -48,9 +45,6 @@ export function WebsiteConfigPanel() {
         defaultRole: Exclude<Role, typeof ROLES.EMPEROR>,
         emailDomains: string,
         adminContact: string,
-        adminUsername: string | null,
-        adminUserId: string | null,
-        currentUserIsAdmin: boolean,
         maxEmails: string,
         turnstile?: {
           enabled: boolean,
@@ -61,9 +55,6 @@ export function WebsiteConfigPanel() {
       setDefaultRole(data.defaultRole)
       setEmailDomains(data.emailDomains)
       setAdminContact(data.adminContact)
-      setAdminUsername(data.adminUsername ?? "")
-      setAdminUserId(data.adminUserId ?? "")
-      setCurrentUserIsAdmin(Boolean(data.currentUserIsAdmin))
       setMaxEmails(data.maxEmails || EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString())
       setTurnstileEnabled(Boolean(data.turnstile?.enabled))
       setTurnstileSiteKey(data.turnstile?.siteKey ?? "")
@@ -137,29 +128,6 @@ export function WebsiteConfigPanel() {
               onChange={(e) => setEmailDomains(e.target.value)}
               placeholder={t("emailDomainsPlaceholder")}
             />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <span className="text-sm">管理员 GitHub 用户名:</span>
-          <div className="flex-1">
-            <Input
-              value={adminUsername || "未设置"}
-              readOnly
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <span className="text-sm">管理员用户 ID:</span>
-          <div className="flex-1">
-            <Input
-              value={adminUserId || "未设置"}
-              readOnly
-            />
-            <p className="mt-1 text-xs text-muted-foreground">
-              {currentUserIsAdmin ? "当前登录账号就是管理员" : "当前登录账号不是管理员"}
-            </p>
           </div>
         </div>
 
