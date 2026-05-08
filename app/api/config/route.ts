@@ -3,7 +3,7 @@ import { getRequestContext } from "@cloudflare/next-on-pages"
 import { EMAIL_CONFIG } from "@/config"
 import { checkPermission, auth } from "@/lib/auth"
 import { createDb } from "@/lib/db"
-import { roles } from "@/lib/schema"
+import { users, roles } from "@/lib/schema"
 import { eq } from "drizzle-orm"
 
 export const runtime = "edge"
@@ -20,10 +20,17 @@ async function getAdminUserInfo() {
   })
 
   const adminUserId = emperorRole?.userRoles?.[0]?.userId || null
+  const adminUser = adminUserId
+    ? await db.query.users.findFirst({
+        where: eq(users.id, adminUserId),
+      })
+    : null
+  const adminUsername = adminUser?.username || adminUser?.name || null
   const currentUserIsAdmin = Boolean(session?.user?.id && session.user.id === adminUserId)
 
   return {
     adminUserId,
+    adminUsername,
     currentUserIsAdmin,
   }
 }
@@ -31,7 +38,7 @@ async function getAdminUserInfo() {
 export async function GET() {
   const env = getRequestContext().env
   const canManageConfig = await checkPermission(PERMISSIONS.MANAGE_CONFIG)
-  const { adminUserId, currentUserIsAdmin } = await getAdminUserInfo()
+  const { adminUserId, adminUsername, currentUserIsAdmin } = await getAdminUserInfo()
 
   const [
     defaultRole,
@@ -56,6 +63,7 @@ export async function GET() {
     emailDomains: emailDomains || "moemail.app",
     adminContact: adminContact || "",
     adminUserId,
+    adminUsername,
     currentUserIsAdmin,
     maxEmails: maxEmails || EMAIL_CONFIG.MAX_ACTIVE_EMAILS.toString(),
     turnstile: canManageConfig ? {
