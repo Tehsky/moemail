@@ -9,7 +9,7 @@ import { getRequestContext } from "@cloudflare/next-on-pages"
 import { Permission, hasPermission, ROLES, Role } from "./permissions"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { hashPassword, comparePassword } from "@/lib/utils"
-import { authSchema, AuthSchema } from "@/lib/validation"
+import { authSchema, AuthSchema, normalizeUsername, generateRandomUsername } from "@/lib/validation"
 import { generateAvatarUrl } from "./avatar"
 import { getUserId } from "./apiKey"
 import { verifyTurnstileToken } from "./turnstile"
@@ -244,9 +244,28 @@ export const {
 
 export async function register(username: string, password: string) {
   const db = createDb()
+  let finalUsername = normalizeUsername(username)
+
+  if (!finalUsername) {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const candidate = generateRandomUsername()
+      const existingCandidate = await db.query.users.findFirst({
+        where: eq(users.username, candidate)
+      })
+
+      if (!existingCandidate) {
+        finalUsername = candidate
+        break
+      }
+    }
+
+    if (!finalUsername) {
+      throw new Error("随机用户名生成失败，请重试")
+    }
+  }
 
   const existing = await db.query.users.findFirst({
-    where: eq(users.username, username)
+    where: eq(users.username, finalUsername)
   })
 
   if (existing) {
@@ -257,7 +276,7 @@ export async function register(username: string, password: string) {
 
   const [user] = await db.insert(users)
     .values({
-      username,
+      username: finalUsername,
       password: hashedPassword,
     })
     .returning()

@@ -94,9 +94,9 @@ export function LoginForm({ turnstile }: LoginFormProps) {
 
   const validateRegisterForm = () => {
     const newErrors: FormErrors = {}
-    if (!username) newErrors.username = t("errors.usernameRequired")
+    const normalizedUsername = username.trim()
+    if (normalizedUsername && normalizedUsername.includes('@')) newErrors.username = t("errors.usernameInvalid")
     if (!password) newErrors.password = t("errors.passwordRequired")
-    if (username.includes('@')) newErrors.username = t("errors.usernameInvalid")
     if (password && password.length < 8) newErrors.password = t("errors.passwordTooShort")
     if (!confirmPassword) newErrors.confirmPassword = t("errors.confirmPasswordRequired")
     if (password !== confirmPassword) newErrors.confirmPassword = t("errors.passwordMismatch")
